@@ -88,8 +88,18 @@ public class ServerMainController {
 
     @FXML
     void handleExit() {
-        System.exit(0);
+        try {
+            if (server != null) {   // if server is running, stop it
+                server.close();
+                server = null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            System.exit(0);         // close the application window
+        }
     }
+
 
     public void addClient(String ip, String host, int id) {
         Platform.runLater(() -> clients.add(new ClientInfo(ip, host, "Connected", id)));

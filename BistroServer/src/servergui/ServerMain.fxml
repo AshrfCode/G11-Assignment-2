@@ -61,15 +61,17 @@
                 </GridPane>
 
                 <HBox spacing="15" alignment="CENTER">
-                    <Button text="Connect" fx:id="connectButton" onAction="#handleConnect" styleClass="primary-btn"/>
-                    <Button text="Disconnect" fx:id="disconnectButton" onAction="#handleDisconnect" styleClass="danger-btn"/>
+                    <Button text="Connect" fx:id="connectButton"
+                            onAction="#handleConnect" styleClass="primary-btn"/>
+                    <Button text="Disconnect" fx:id="disconnectButton"
+                            onAction="#handleDisconnect" styleClass="danger-btn"/>
                 </HBox>
+
             </VBox>
 
             <!-- CARD 2: CLIENT LIST -->
             <VBox spacing="20" styleClass="glass-card" GridPane.rowIndex="0" GridPane.columnIndex="1">
                 <Label text="Connected Clients" styleClass="card-title"/>
-                
 
                 <TableView fx:id="clientTable" prefHeight="300" styleClass="client-table">
                     <columns>
@@ -77,11 +79,11 @@
                         <TableColumn text="Host" fx:id="hostColumn"/>
                         <TableColumn text="Status" fx:id="statusColumn"/>
                     </columns>
-                    
-				           <placeholder>
-						        <Label text="No connected clients" styleClass="table-placeholder"/>
-						    </placeholder>
-				    
+
+                    <placeholder>
+                        <Label text="No connected clients" styleClass="table-placeholder"/>
+                    </placeholder>
+
                 </TableView>
 
                 <HBox alignment="CENTER">
@@ -91,8 +93,25 @@
 
         </GridPane>
 
-        <!-- FOOTER STATUS BAR -->
-        <Label fx:id="statusLabel" text="Status: Idle" styleClass="status-label"/>
+        <!-- FOOTER BAR: status centered, exit on the right -->
+        <BorderPane>
+            <center>
+                <Label fx:id="statusLabel"
+                       text="Status: Idle"
+                       styleClass="status-label"/>
+            </center>
+
+            <right>
+                <Button text="Exit"
+                        onAction="#handleExit"
+                        styleClass="danger-btn"
+                        style="-fx-padding: 8 18; -fx-font-size: 14px;"/>
+            </right>
+
+            <padding>
+                <Insets top="10" bottom="10" left="20" right="20"/>
+            </padding>
+        </BorderPane>
 
     </VBox>
 
