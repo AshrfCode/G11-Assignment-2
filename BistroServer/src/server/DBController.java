@@ -1,92 +1,107 @@
 package server;
 
-import java.sql.Connection;
+import java.sql.*;
 import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.*;
 import common.Order;
 
 public class DBController {
 
-    private static final String URL =
-            "jdbc:mysql://localhost:3306/Bistro?serverTimezone=Asia/Jerusalem&useSSL=false&allowPublicKeyRetrieval=true";
-    private static final String USER = "root";
-    private static final String PASSWORD = "Aa123456";
+    private final MySQLConnectionPool pool = MySQLConnectionPool.getInstance();
 
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
-    }
-
-    // --------------------------------------------------------------------
-    //  GET ALL ORDERS
-    // --------------------------------------------------------------------
+    // ------------------------------------------------------------
+    // GET ALL ORDERS
+    // ------------------------------------------------------------
     public List<Order> getAllOrders() {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM `Order`";
 
-        try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        PooledConnection pConn = null;
+        Connection conn = null;
 
-            while (rs.next()) {
-                orders.add(new Order(
-                        rs.getInt("order_number"),
-                        rs.getDate("order_date"),
-                        rs.getInt("number_of_guests"),
-                        rs.getInt("confirmation_code"),
-                        rs.getInt("subscriber_id"),
-                        rs.getDate("date_of_placing_order")
-                ));
+        try {
+            pConn = pool.getConnection();
+            pConn.touch();
+            conn = pConn.getConnection();
+
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(sql)) {
+
+                while (rs.next()) {
+                    orders.add(new Order(
+                            rs.getInt("order_number"),
+                            rs.getDate("order_date"),
+                            rs.getInt("number_of_guests"),
+                            rs.getInt("confirmation_code"),
+                            rs.getInt("subscriber_id"),
+                            rs.getDate("date_of_placing_order")
+                    ));
+                }
             }
-
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            pool.releaseConnection(pConn);
         }
 
         return orders;
     }
 
-    // --------------------------------------------------------------------
-    //  UPDATE ORDER DATE
-    // --------------------------------------------------------------------
+    // ------------------------------------------------------------
+    // UPDATE ORDER DATE
+    // ------------------------------------------------------------
     public boolean updateOrderDate(int orderNumber, Date newDate) {
         String sql = "UPDATE `Order` SET order_date = ? WHERE order_number = ?";
 
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        PooledConnection pConn = null;
+        Connection conn = null;
 
-            stmt.setDate(1, newDate);
-            stmt.setInt(2, orderNumber);
+        try {
+            pConn = pool.getConnection();
+            pConn.touch();
+            conn = pConn.getConnection();
 
-            return stmt.executeUpdate() > 0;
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setDate(1, newDate);
+                stmt.setInt(2, orderNumber);
 
-        } catch (SQLException e) {
+                return stmt.executeUpdate() > 0;
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
+        } finally {
+            pool.releaseConnection(pConn);
         }
     }
 
-    // --------------------------------------------------------------------
-    //  UPDATE NUMBER OF GUESTS (matches your table)
-    // --------------------------------------------------------------------
+    // ------------------------------------------------------------
+    // UPDATE NUMBER OF GUESTS
+    // ------------------------------------------------------------
     public boolean updateNumberOfGuests(int orderNumber, int guests) {
         String sql = "UPDATE `Order` SET number_of_guests = ? WHERE order_number = ?";
 
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        PooledConnection pConn = null;
+        Connection conn = null;
 
-            stmt.setInt(1, guests);
-            stmt.setInt(2, orderNumber);
+        try {
+            pConn = pool.getConnection();
+            pConn.touch();
+            conn = pConn.getConnection();
 
-            return stmt.executeUpdate() > 0;
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, guests);
+                stmt.setInt(2, orderNumber);
 
-        } catch (SQLException e) {
+                return stmt.executeUpdate() > 0;
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
+        } finally {
+            pool.releaseConnection(pConn);
         }
     }
 }

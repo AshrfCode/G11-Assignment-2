@@ -13,10 +13,23 @@ public class ClientInfo {
         this.id = id;
     }
 
-    public String getIp() { return ip; }
-    public String getHost() { return host; }
-    public String getStatus() { return status; }
-    public int getId() { return id; }
+    public String getIp() { 
+    	return ip; 
+    }
+    
+    public String getHost() { 
+    	return host; 
+    }
+    
+    public String getStatus() { 
+    	return status; 
+    }
+    
+    public int getId() { 
+    	return id; 
+    }
 
-    public void setStatus(String status) { this.status = status; }
+    public void setStatus(String status) {
+    	this.status = status;
+    }
 }
