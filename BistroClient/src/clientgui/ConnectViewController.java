@@ -43,7 +43,8 @@ public class ConnectViewController {
     } 
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientgui/ClientView.fxml"));
-      Scene scene = new Scene((Parent)loader.load());
+      Scene scene = new Scene((Parent)loader.load());	
+      scene.getStylesheets().add(getClass().getResource("ClientGUI.css").toExternalForm());
       ClientGUIController controller = (ClientGUIController)loader.getController();
       if (controller == null) {
         this.statusLabel.setText("Failed: Controller not loaded from FXML.");
